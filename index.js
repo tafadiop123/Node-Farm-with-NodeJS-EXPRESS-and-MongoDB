@@ -179,6 +179,9 @@ server.listen(5500, "127.0.0.1", ()=>{
 //////////////// 9 - Using my own Modules  ///////////////////////////////
 /*Dans cette section je vais créer un module qui me permettra d'exporter ou d'importer une fonction entre les modules 
 */
+
+/*
+
 const http = require("http");
 const fs = require("fs");
 const url = require("url");
@@ -236,7 +239,7 @@ const server = http.createServer((req, res)=>{
 server.listen(5500, "127.0.0.1", ()=>{
     console.log("Listening to requests on port 5500");
 });
-
+*/
 
 ///////////////////// 10 - Introduction to NPM and the package json File              ///////////////////////////////////////////
 /*
@@ -266,7 +269,78 @@ Alors une fois que la déendance est disponible, au lieu d'exécuter le code par
 à chaque fois du serveur, quand on effectue des modifications dans le code JS et les autres modules aussi. 
 
 ----->>>> NB : Il y'a une autre façon d'exécuter le projet en utilisant l'option start dans le fichier "package.json", pour ce faire dans la 
-partie "script" on va écrire le code qui permet qui permet d'exécuter le projet et dans le terminal on va juste écrire : " npm run start"
+partie "script" on va écrire le code qui permet qui permet d'exécuter le projet et dans le terminal on va juste écrire : " npm run start" ou
+" npm start " 
 
 
 */
+
+//////////////////////// 11 - Require Our Own Module //////////////////
+const http = require("http");
+const fs = require("fs");
+const url = require("url");
+
+const slugify = require("slugify");
+/*
+Ce module permet de gérer une route d'un URL, sous forme de module tierce partie. Par exemple dans ce projet il va changer la route "/product?id=0" par
+"/product/fresh-avocados". Et cette partie changée est nommé le "Slug"
+*/
+
+const replaceTemplate = require("./myCode/modules/replaceTemplate");
+
+
+
+//On va lire chaque template créé
+const tempOverview = fs.readFileSync(`${__dirname}/myCode/templates/template-overview.html`, "utf-8");
+const tempCard = fs.readFileSync(`${__dirname}/myCode/templates/template-card.html`, "utf-8");
+const tempProduct = fs.readFileSync(`${__dirname}/myCode/templates/template-product.html`, "utf-8");
+
+//On lit le fichier JSON
+const data = fs.readFileSync(`${__dirname}/myCode/dev-data/data.json`, "utf-8");
+// 2ème Méthode : fs.readFile("./myCode/dev-data/data.json"); C'est la même chose
+
+const dataObj = JSON.parse(data);
+
+// On va créer un nouveau array contenant les "Slugs" 
+const slugs = dataObj.map(el => slugify(el.productName, { lower: true}));
+console.log(slugs);
+
+//New server created
+const server = http.createServer((req, res)=>{
+    //On crée la variable qui va contenir le query et le nom du chemin en utilisant le fonction de restructuration ES6 " { } "
+    const {query, pathname} = (url.parse(req.url, true));
+    //Overview Page
+    if (pathname === "/" || pathname === "/taf"){
+        res.writeHead(200, {'Content-Type': 'text/html'});
+        //Ici on utilise la méthode " map " car on veut retourner quelque chose car il accepte une fonction callback qui prend commme argument 
+        //l'élément récent " el " de la boucle, qui sera enregistrer dans un array
+        const cardsHtml = dataObj.map(el => replaceTemplate(tempCard, el)).join('');
+        const output = tempOverview.replace("{%PRODUCT_CARDS%}", cardsHtml);
+        res.end(output);
+    //Product Page
+    } else if (pathname === "/product"){
+        res.writeHead(200, {'Content-Type': 'text/html'});
+        //On va créé la variable qui va receuillir l'id de la requête 
+        const product = dataObj[query.id];
+        const output = replaceTemplate(tempProduct, product);
+        res.end(output);
+
+    //API
+    } else if (pathname === "/api") {
+        res.writeHead(200, {'Content-Type': 'application/json'});
+        res.end(data); 
+
+    //Not Found page
+    } else {
+        //Le header est un code qui permet de renvoyer une information concernant la réponse que l'on renvoie au client 
+        res.writeHead(404, { 
+            "Content-type" : "text/html",
+            "my-own-header" : "hello-world"
+        });
+        res.end("<h1>This page can't be found!</h1>");
+    }
+});
+
+server.listen(5500, "127.0.0.1", ()=>{
+    console.log("Listening to requests on port 5500");
+});
