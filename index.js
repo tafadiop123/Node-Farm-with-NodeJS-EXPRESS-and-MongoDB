@@ -276,6 +276,8 @@ partie "script" on va écrire le code qui permet qui permet d'exécuter le proje
 */
 
 //////////////////////// 11 - Require Our Own Module //////////////////
+/////////////////////// 12 - Package Versioning and Updating /////////////////
+
 const http = require("http");
 const fs = require("fs");
 const url = require("url");
@@ -284,6 +286,11 @@ const slugify = require("slugify");
 /*
 Ce module permet de gérer une route d'un URL, sous forme de module tierce partie. Par exemple dans ce projet il va changer la route "/product?id=0" par
 "/product/fresh-avocados". Et cette partie changée est nommé le "Slug"
+
+- Pour voir les packages qui ne sont pas à jour, on écrit : " npm outdated "
+- Pour installer une version précise du package "slugify" par exemple, on écrit sur le terminal : " npm install slugify@NUMERO DE LA VERSION"
+- Et pour mettre à jour le package, on écrit : " npm update slugify ( ou on met le NOM DU PACKAGE à mettre à jour) "
+- Et enfin pour supprimer un package, on écrit " npm uninstall slugify ( ou on met le NOM DU PACKAGE à supprimer)" 
 */
 
 const replaceTemplate = require("./myCode/modules/replaceTemplate");
