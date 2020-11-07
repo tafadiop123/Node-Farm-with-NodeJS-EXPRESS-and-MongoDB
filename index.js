@@ -293,8 +293,7 @@ Ce module permet de gérer une route d'un URL, sous forme de module tierce parti
 - Et enfin pour supprimer un package, on écrit " npm uninstall slugify ( ou on met le NOM DU PACKAGE à supprimer)" 
 */
 
-const replaceTemplate = require("./myCode/modules/replaceTemplate");
-
+const replaceTemplate = require('./myCode/modules/replaceTemplate');
 
 
 //On va lire chaque template créé
@@ -348,6 +347,6 @@ const server = http.createServer((req, res)=>{
     }
 });
 
-server.listen(5500, "127.0.0.1", ()=>{
-    console.log("Listening to requests on port 5500");
+server.listen(5555, "127.0.0.1", ()=>{
+    console.log("Listening to requests on port 5555");
 });
